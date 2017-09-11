@@ -3,6 +3,13 @@
 
 #include <vector>
 #include <tuple>
+#include <cstdio> /* sscanf */
+#include <iostream>
+#include <fstream>
+#include <regex>    /* regular expression */
+#include <vector>
+#include <tuple>
+#include <set>
 
 // Keep this
 enum Direction   { up, left, down, right, undefined };
@@ -25,6 +32,12 @@ SolveRushHourOptimally( std::string const& filename );
 ////////////////////////////////////////////////////////////////////////////////
 // your stuff
 ////////////////////////////////////////////////////////////////////////////////
+
+//Tenative plan:
+//Non-optimal solution:  vanilla DFS
+//Optimal solution:   depth-bounded DFS and BFS
+
+
 
 class ParkingLotSolver {
     private:
