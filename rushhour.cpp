@@ -76,9 +76,11 @@ public:
 	unsigned boardWidth;
 	unsigned boardHeight;
 	unsigned numCars;
+	std::tuple<unsigned, Direction, unsigned> moveToGetHere;
 
-	BoardState() : parent(NULL), myState(NULL), myCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), boardWidth(0), boardHeight(0), numCars(0) {}
-	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar)), boardWidth(r.getWidth()), boardHeight(r.getHeight())
+
+	BoardState() : parent(NULL), myState(NULL), myCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), boardWidth(0), boardHeight(0), numCars(0), moveToGetHere(0,left,0) {}
+	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar)), boardWidth(r.getWidth()), boardHeight(r.getHeight()), moveToGetHere(0,left,0) {}
 	{
 		//unsigned w = r.getWidth();
 		//unsigned h = r.getHeight();
@@ -109,6 +111,7 @@ public:
 			boardWidth = other.boardWidth;
 			boardHeight = other.boardHeight;
 			numCars = other.numCars;
+			moveToGetHere = std::tuple<unsigned,Direction,unsigned>(std::get<0>(other.moveToGetHere), std::get<1>(other.moveToGetHere), std::get<2>(other.moveToGetHere));
 
 			myState = new unsigned*[boardHeight];
 
@@ -236,9 +239,9 @@ public:
 		for (int x = 0; x < 2; x++)   //For each direction
 		{
 
-			for (int i = 1; i <= spacesToCheck; i++)
+			for (int y = 1; y <= spacesToCheck; y++)
 			{
-				std::tuple<unsigned, Direction, unsigned> move(car, directions[x], i);
+				std::tuple<unsigned, Direction, unsigned> move(car, directions[x], y);
 					//void RushHour::makeMove(std::tuple< unsigned, Direction, unsigned > move)
 				
 
@@ -290,7 +293,7 @@ public:
 
 										child.myState[i][j] = 0;
 										child.myState[i + di][j + dj] = carToMove;
-
+										child.moveToGetHere = move;
 
 										//IF THIS STATE IS ALREADY ON CLOSED LIST, DELETE THIS CHILD AND IGNORE IT
 										//OTHERWISE, PUSH ONTO CLOSED LIST
