@@ -73,24 +73,259 @@ public:
 	int carSwaps;
 	int treeDepth;
 	Orientation myOrientation;
+	unsigned boardWidth;
+	unsigned boardHeight;
+	unsigned numCars;
 
-	BoardState() : parent(NULL), myState(NULL), myCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal) {}
-	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar))
+	BoardState() : parent(NULL), myState(NULL), myCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), boardWidth(0), boardHeight(0), numCars(0) {}
+	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar)), boardWidth(r.getWidth()), boardHeight(r.getHeight())
 	{
-		unsigned w = r.getWidth();
-		unsigned h = r.getHeight();
+		//unsigned w = r.getWidth();
+		//unsigned h = r.getHeight();
 
-		myState = new unsigned*[h];
+		myState = new unsigned*[boardHeight];
 
-		for (int i = 0; i < h; i++)
+		for (int i = 0; i < boardHeight; i++)
 		{
-			myState[i] = new unsigned[w];
-			for (int j = 0; j < w; j++)
+			myState[i] = new unsigned[boardWidth];
+			for (int j = 0; j < boardWidth; j++)
 			{
 				myState[i][j] = r.getLotIndex(i, j);
+				numCars = std::max(numCars, myState[i][j]);
 			}
 		}
 	}
+
+																							//Car swap does NOT update here, but tree depth DOES
+	BoardState(BoardState& other) //: parent(&other), myState(NULL), myCar(other.myCar), carSwaps(other.carSwaps), treeDepth(other.treeDepth +1), myOrientation(other.myOrientation), 
+	{
+		if (this != &other)
+		{
+			parent = &other;
+			myCar = other.myCar;
+			myOrientation = other.myOrientation;
+			carSwaps = other.carSwaps;
+			treeDepth = other.treeDepth + 1;
+			boardWidth = other.boardWidth;
+			boardHeight = other.boardHeight;
+			numCars = other.numCars;
+
+			myState = new unsigned*[boardHeight];
+
+			for (int i = 0; i < boardHeight; i++)
+			{
+				myState[i] = new unsigned[boardWidth];
+				for (int j = 0; j < boardWidth; j++)
+				{
+					myState[i][j] = other.myState[i][j];
+				}
+			}
+
+
+		}
+	}
+
+	BoardState(std::string const& filename) : BoardState(RushHour(filename)) {}   //Double check this -- might need a copy constructor / assignment operator to make this work right??
+
+
+	//Delete array but do NOT delete parent??   Do not delete children??
+	~BoardState() {
+
+		for (int i = 0; i < boardHeight; i++)
+		{
+			delete myState[i];
+		}
+		delete myState;
+	}
+
+
+
+
+
+	Orientation getOrientation(unsigned car) const
+
+	{
+		for (int i = 0; i<boardHeight; i++)
+		{
+			for (int j = 0; j < boardWidth; j++)
+			{
+				if (myState[i][j] == car)
+				{
+					//If the next ROW is also this car, it has vertical orientation
+					//If the next COLUMN also has this car, it has horizontal orientation
+					if (myState[i + 1][j] == car)
+					{
+						return vertical;
+					}
+					else
+					{
+						return horisontal;
+					}
+				}
+			}
+		}
+	}
+
+
+
+	//Use the given 'make a move' logic to determine what moves to try
+
+	/*
+	
+	move = car,    direction, num positions
+	void RushHour::makeMove(std::tuple< unsigned, Direction, unsigned > move)
+	{
+
+
+
+	int d = std::get<1>(move); // convert direction to int
+	int di = (d - 1)*((3 - d) % 2);    // see comment before function
+	int dj = (d - 2)*(d % 2);        // see comment before function
+	int scan_direction = di + dj; // -1 (up,left) or 1 (down,right)
+
+	unsigned num_positions = std::get<2>(move);
+	unsigned car = std::get<0>(move);
+
+	unsigned i_start = (scan_direction == 1) ? height - 1 : 0;
+	unsigned j_start = (scan_direction == 1) ? width - 1 : 0;
+	for (unsigned step = 0; step<num_positions; ++step) { // move car 1 position at a time
+	for (unsigned i = i_start; i<height; i -= scan_direction) {
+	for (unsigned j = j_start; j<width; j -= scan_direction) {
+	if (parking_lot[i][j] == car) {
+	parking_lot[i][j] = 0;
+	// check if legal
+	if (i + di >= height && j + dj >= width) {
+	throw("Car moved outside of parking lot");
+	return;
+	}
+	if (parking_lot[i + di][j + dj] > 0) {
+	throw("Car moved on top of another car");
+	return;
+	}
+	parking_lot[i + di][j + dj] = car;
+	}
+	}
+	}
+	}
+	}
+
+
+	*/
+
+	void spawnChildren()
+	{
+		for (int i = 1; i <= numCars; i++)
+		{
+			spawnChildrenPerCar(i);
+		}
+	}
+
+
+	void spawnChildrenPerCar(unsigned car)   //Will have to loop through & call this for each car
+	{
+		Direction directions[2] = { left, right };
+		int spacesToCheck = boardWidth;
+		bool isVertical = (this->getOrientation(car) == vertical);
+		if (isVertical)
+		{
+			directions[0] = up;
+			directions[1] = down;
+			spacesToCheck = boardHeight;
+		}
+
+		for (int x = 0; x < 2; x++)   //For each direction
+		{
+
+			for (int i = 1; i <= spacesToCheck; i++)
+			{
+				std::tuple<unsigned, Direction, unsigned> move(car, directions[x], i);
+					//void RushHour::makeMove(std::tuple< unsigned, Direction, unsigned > move)
+				
+
+
+
+					int d = std::get<1>(move); // convert direction to int
+					int di = (d - 1)*((3 - d) % 2);    // see comment before function
+					int dj = (d - 2)*(d % 2);        // see comment before function
+					int scan_direction = di + dj; // -1 (up,left) or 1 (down,right)
+
+					unsigned num_positions = std::get<2>(move);
+					unsigned carToMove = std::get<0>(move);
+
+					unsigned i_start = (scan_direction == 1) ? boardHeight - 1 : 0;
+					unsigned j_start = (scan_direction == 1) ? boardWidth - 1 : 0;
+					for (unsigned step = 0; step < num_positions; ++step) { // move car 1 position at a time
+						for (unsigned i = i_start; i < boardHeight; i -= scan_direction) {
+							for (unsigned j = j_start; j < boardWidth; j -= scan_direction) {
+								if (myState[i][j] == carToMove) {
+									
+									//Instead of editing MY state, check that the move will be valid, then make a new board state
+									
+							//		myState[i][j] = 0;
+									// check if legal
+									if ((i + di >= boardHeight && j + dj >= boardWidth) ||  (myState[i + di][j + dj] > 0))  //If invalid move, do nothing
+									{//	throw("Car moved outside of parking lot");
+									//	return;
+									
+									
+									//	throw("Car moved on top of another car");
+									//	return;
+									
+									
+									
+									
+									}
+									else {
+										//boardState[i + di][j + dj] = car;
+
+										//Make child board state, make move on child
+										BoardState child(*this);
+
+										if(carToMove != this->myCar)
+										{
+											child.myCar = carToMove;
+											child.carSwaps++;
+
+										}
+
+										child.myState[i][j] = 0;
+										child.myState[i + di][j + dj] = carToMove;
+
+
+										//IF THIS STATE IS ALREADY ON CLOSED LIST, DELETE THIS CHILD AND IGNORE IT
+										//OTHERWISE, PUSH ONTO CLOSED LIST
+
+
+										//
+
+
+									}
+								}
+							}
+						}
+					}
+				}
+
+			
+
+
+
+
+
+
+
+
+
+		}
+
+
+
+	}
+
+
+
+
+
 //private:
 
 	//How the fuck do I delete this monstrosity without leaks aaaaaa
