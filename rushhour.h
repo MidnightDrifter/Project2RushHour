@@ -7,7 +7,8 @@
 #include <iostream>
 #include <fstream>
 #include <regex>    /* regular expression */
-#include <vector>
+#include <queue>
+#include <stack>
 #include <tuple>
 #include <set>
 

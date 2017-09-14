@@ -60,6 +60,29 @@ public:
 	unsigned** getParkingLot() const { return parking_lot; }
 	Direction getExitDirection() const { return exit_direction; }
 	unsigned getLotIndex(int x, int y) const {		return parking_lot[x][y];	}
+
+
+	std::vector<std::tuple<unsigned, Direction, unsigned>> RushHourBFS()
+	{
+		std::priority_queue<BoardState> openList;
+		std::vector<BoardState> closedList;
+
+
+
+
+	}
+
+
+	std::vector < std::tuple<unsigned, Direction, unsigned>> RushHourDFS()
+	{
+		std::priority_queue<BoardState> openList;
+		std::vector<BoardState> closedList;
+
+
+
+
+	}
+
 };
 
 
@@ -78,6 +101,7 @@ public:
 	unsigned numCars;
 	std::tuple<unsigned, Direction, unsigned> moveToGetHere;
 
+	
 
 	BoardState() : parent(NULL), myState(NULL), myCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), boardWidth(0), boardHeight(0), numCars(0), moveToGetHere(0,left,0) {}
 	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar)), boardWidth(r.getWidth()), boardHeight(r.getHeight()), moveToGetHere(0,left,0) {}
@@ -215,16 +239,18 @@ public:
 
 	*/
 
-	void spawnChildren()
+	std::vector<BoardState> spawnChildren()
 	{
+		std::vector<BoardState> out;
 		for (int i = 1; i <= numCars; i++)
 		{
-			spawnChildrenPerCar(i);
+			spawnChildrenPerCar(i, out);
 		}
+		return out;
 	}
 
 
-	void spawnChildrenPerCar(unsigned car)   //Will have to loop through & call this for each car
+	void spawnChildrenPerCar(unsigned car, std::vector<BoardState>& vec)   //Will have to loop through & call this for each car
 	{
 		Direction directions[2] = { left, right };
 		int spacesToCheck = boardWidth;
@@ -297,8 +323,10 @@ public:
 
 										//IF THIS STATE IS ALREADY ON CLOSED LIST, DELETE THIS CHILD AND IGNORE IT
 										//OTHERWISE, PUSH ONTO CLOSED LIST
+										//But do that ouside of this function for the sake of my sanity
 
 
+										vec.push_back(child);
 										//
 
 
