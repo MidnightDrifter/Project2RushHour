@@ -70,12 +70,15 @@ public:
 
 
 
+
+
 	}
 
 
 	std::vector < std::tuple<unsigned, Direction, unsigned>> RushHourDFS()
 	{
-		std::priority_queue<BoardState> openList;
+		
+		std::stack<BoardState> openList;
 		std::vector<BoardState> closedList;
 
 
@@ -99,12 +102,51 @@ public:
 	unsigned boardWidth;
 	unsigned boardHeight;
 	unsigned numCars;
+	Direction exitDirection;
 	std::tuple<unsigned, Direction, unsigned> moveToGetHere;
+	unsigned goalCar;
+
+	bool isSolved() const
+	{
+		
+		
+			unsigned i_car_pos = boardHeight;
+			unsigned j_car_pos = boardWidth;
+			Orientation orientation = horisontal;
+			bool done = false;
+			for (unsigned i = 0; i<boardHeight && !done; ++i) {
+				for (unsigned j = 0; j<boardWidth && !done; ++j) {
+					if (myState[i][j] == goalCar) {
+						if (i_car_pos == boardHeight) { // first time seeing car
+							i_car_pos = i;
+							j_car_pos = j;
+						}
+						else { //second time - ready to make decision 
+							if (j_car_pos == j) { // default is horisontal
+								orientation = vertical;
+							}
+							done = true;
+						}
+					}
+				}
+			}
+
+			bool solved = false;
+			switch (exitDirection) {
+			case up:    solved = orientation == vertical   && myState[0][j_car_pos] == goalCar; break;
+			case left:  solved = orientation == horisontal && myState[i_car_pos][0] == goalCar; break;
+			case down:  solved = orientation == vertical   && myState[boardHeight - 1][j_car_pos] == goalCar; break;
+			case right: solved = orientation == horisontal && myState[i_car_pos][boardWidth - 1] == goalCar; break;
+			default: break;
+			}
+			return solved;
+		
+	}
 
 	
 
-	BoardState() : parent(NULL), myState(NULL), myCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), boardWidth(0), boardHeight(0), numCars(0), moveToGetHere(0,left,0) {}
-	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar)), boardWidth(r.getWidth()), boardHeight(r.getHeight()), moveToGetHere(0,left,0) {}
+	BoardState() : parent(NULL), myState(NULL), myCar(0),goalCar(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), boardWidth(0), boardHeight(0), numCars(0), moveToGetHere(0,left,0), exitDirection(left) {}
+	BoardState(const RushHour& r) : parent(NULL), myState(NULL), myCar(r.getGoalCar()),goalCar(myCar), carSwaps(0), treeDepth(0), myOrientation(r.getOrientation(myCar)), boardWidth(r.getWidth()), boardHeight(r.getHeight()), moveToGetHere(0,left,0), exitDirection(r.getExitDirection()) {}
 	{
 		//unsigned w = r.getWidth();
 		//unsigned h = r.getHeight();
