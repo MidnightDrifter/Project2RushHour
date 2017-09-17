@@ -11,6 +11,8 @@
 #include <stack>
 #include <tuple>
 #include <set>
+#include <functional>
+#include <list>
 
 // Keep this
 enum Direction   { up, left, down, right, undefined };

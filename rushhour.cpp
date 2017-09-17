@@ -38,6 +38,7 @@ public:
 
 	RushHour(std::string const&  filename);
 	~RushHour();
+
 	void makeMove(std::tuple< unsigned, Direction, unsigned > move);
 	std::vector< std::tuple<unsigned, Direction, unsigned> > Solve()
 	{
@@ -64,11 +65,81 @@ public:
 
 	std::vector<std::tuple<unsigned, Direction, unsigned>> RushHourBFS()
 	{
-		std::priority_queue<BoardState> openList;
-		std::vector<BoardState> closedList;
+		//std::priority_queue<BoardState, std::vector<BoardState>, std::greater<BoardState> > openList;
+		std::priority_queue<BoardState, std::vector<BoardState>, std::greater<BoardState>> openList;
+		std::list<BoardState> closedList;
+
+		BoardState startingState(*this);
+		openList.push(startingState);
+		std::vector<BoardState> stateHolder;	
+		std::vector<std::tuple<unsigned, Direction, unsigned>> output;
+		bool isOnClosedList = false;
+		BoardState tempState;
+		while (!openList.empty())
+		{
+			//isOnClosedList = false;
+			tempState = openList.top();
+			openList.pop();
+
+
+			if (tempState.isSolved())
+			{
+				//Loop back through moves until you get to the start, push them into vector one by one
+				output.push_back(tempState.moveToGetHere);
+				while (tempState.parent)
+				{
+					tempState = *tempState.parent;
+					output.push_back(tempState.moveToGetHere);
+				}
+
+				std::reverse(output.begin(), output.end());
+
+				return output;
+			}
 
 
 
+			//if (!isOnClosedList)
+			//{
+			std::swap(stateHolder, tempState.spawnChildren());
+
+			for (int x = 0; x < stateHolder.size(); x++)
+			{
+				isOnClosedList = false;
+				for (auto i = closedList.begin(); i != closedList.end(); i++)
+				{
+					if (stateHolder[x] == (*i))
+					{
+						isOnClosedList = true;
+						if (stateHolder[x].carSwaps < (*i).carSwaps)
+						{
+
+							openList.push(stateHolder[x]);
+							closedList.remove(*i);
+
+						}
+						i = closedList.end();
+						//isOnClosedList = true;
+
+
+					}
+				}
+
+				if (!isOnClosedList)
+				{
+					openList.push(stateHolder[x]);
+				}
+			}
+
+
+
+			//}
+			//std::swap(stateHolder, 
+
+		}
+		return output;
+
+		
 
 
 
@@ -79,9 +150,83 @@ public:
 	{
 		
 		std::stack<BoardState> openList;
-		std::vector<BoardState> closedList;
+		std::list<BoardState> closedList;
 
 
+		BoardState startingState(*this);
+		openList.push(startingState);
+		BoardState tempState;
+		std::vector<BoardState> stateHolder;
+		std::vector<std::tuple<unsigned, Direction, unsigned>> output;
+		bool isOnClosedList = false;
+		unsigned depth = 2;
+		while (true)
+		{
+			while (!openList.empty())
+			{
+				//isOnClosedList = false;
+				tempState = openList.top();
+				openList.pop();
+
+
+				if (tempState.isSolved())
+				{
+					//Loop back through moves until you get to the start, push them into vector one by one
+					output.push_back(tempState.moveToGetHere);
+					while (tempState.parent)
+					{
+						tempState = *tempState.parent;
+						output.push_back(tempState.moveToGetHere);
+					}
+
+					std::reverse(output.begin(), output.end());
+
+					return output;
+				}
+
+
+
+				//if (!isOnClosedList)
+				//{
+				std::swap(stateHolder, tempState.spawnChildren());
+
+				for (int x = 0; x < stateHolder.size(); x++)
+				{
+					isOnClosedList = false;
+					for (auto i = closedList.begin(); i != closedList.end(); i++)
+					{
+						if (stateHolder[x] == (*i))
+						{
+							isOnClosedList = true;
+							if (stateHolder[x].carSwaps < (*i).carSwaps)
+							{
+
+								openList.push(stateHolder[x]);
+								closedList.remove(*i);
+
+							}
+							i = closedList.end();
+							//isOnClosedList = true;
+
+
+						}
+					}
+
+					if (!isOnClosedList && stateHolder[x].treeDepth < depth)
+					{
+						openList.push(stateHolder[x]);
+					}
+				}
+
+
+
+				//}
+				//std::swap(stateHolder, 
+
+			}
+			depth++;
+		}
+	//	return output;
 
 
 	}
@@ -105,6 +250,98 @@ public:
 	Direction exitDirection;
 	std::tuple<unsigned, Direction, unsigned> moveToGetHere;
 	unsigned goalCar;
+
+
+	friend bool operator<(const BoardState& b1, const BoardState& b2) { return b1.carSwaps < b2.carSwaps; }
+	friend bool operator>(const BoardState& b1, const BoardState& b2) { return b1.carSwaps > b2.carSwaps; }
+
+	bool operator==(const BoardState& other)
+	{
+		for (int i = 0; i < boardHeight; i++)
+		{
+			//myState[i] = new unsigned[boardWidth];
+			for (int j = 0; j < boardWidth; j++)
+			{
+				
+				if(myState[i][j] != other.myState[i][j])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+
+
+
+
+	const BoardState& operator=( BoardState& other)
+	{
+		if (&other != this)
+		{
+			parent = other.parent;
+			myCar = other.myCar;
+			carSwaps = other.carSwaps;
+			treeDepth = other.treeDepth;
+			myOrientation = other.myOrientation;
+			boardWidth = other.boardWidth;
+			boardHeight = other.boardHeight;
+			numCars = other.numCars;
+			exitDirection = other.exitDirection;
+			goalCar = other.goalCar;
+			
+			
+				std::get<0>(moveToGetHere) = std::get<0>(other.moveToGetHere);
+				std::get<1>(moveToGetHere) = std::get<1>(other.moveToGetHere);
+				std::get<2>(moveToGetHere) = std::get<2>(other.moveToGetHere);
+
+
+				for (int i = 0; i < boardHeight; i++)
+				{
+					//myState[i] = new unsigned[boardWidth];
+					for (int j = 0; j < boardWidth; j++)
+					{
+						myState[i][j] = other.myState[i][j];
+					}
+				}
+			
+		}
+	}
+
+
+	const BoardState& operator=(const BoardState& other)
+	{
+		if (&other != this)
+		{
+			parent = other.parent;
+			myCar = other.myCar;
+			carSwaps = other.carSwaps;
+			treeDepth = other.treeDepth;
+			myOrientation = other.myOrientation;
+			boardWidth = other.boardWidth;
+			boardHeight = other.boardHeight;
+			numCars = other.numCars;
+			exitDirection = other.exitDirection;
+			goalCar = other.goalCar;
+
+
+			std::get<0>(moveToGetHere) = std::get<0>(other.moveToGetHere);
+			std::get<1>(moveToGetHere) = std::get<1>(other.moveToGetHere);
+			std::get<2>(moveToGetHere) = std::get<2>(other.moveToGetHere);
+
+
+			for (int i = 0; i < boardHeight; i++)
+			{
+				//myState[i] = new unsigned[boardWidth];
+				for (int j = 0; j < boardWidth; j++)
+				{
+					myState[i][j] = other.myState[i][j];
+				}
+			}
+
+		}
+	}
 
 	bool isSolved() const
 	{
@@ -194,19 +431,23 @@ public:
 		}
 	}
 
+
+
+
 	BoardState(std::string const& filename) : BoardState(RushHour(filename)) {}   //Double check this -- might need a copy constructor / assignment operator to make this work right??
 
 
 	//Delete array but do NOT delete parent??   Do not delete children??
 	~BoardState() {
-
-		for (int i = 0; i < boardHeight; i++)
+		if (myState)
 		{
-			delete myState[i];
+			for (int i = 0; i < boardHeight; i++)
+			{
+				delete myState[i];
+			}
+			delete myState;
 		}
-		delete myState;
 	}
-
 
 
 
@@ -656,8 +897,11 @@ int RushHour::CheckBrief(std::vector< std::tuple<unsigned, Direction, unsigned> 
 }
 RushHour::~RushHour()
 {
-	delete[] parking_lot[0];
-	delete[] parking_lot;
+	if (parking_lot)
+	{
+		delete[] parking_lot[0];
+		delete[] parking_lot;
+	}
 }
 
 void RushHour::Print(std::string const& filename_out)
