@@ -31,7 +31,7 @@ class ParkingLot {
         { 
             return SolveRushHour( filename ); 
         }
-        std::vector< std::tuple<unsigned, Direction, unsigned> > SolveOptimally() 
+        std::vector< std::tuple<unsigned, Direction, unsigned> > SolveBFS() 
             { return SolveRushHourOptimally( filename ); }
         bool IsSolved() const;
         int Check( std::vector< std::tuple<unsigned, Direction, unsigned> > const& sol );
@@ -44,7 +44,7 @@ void run_test( char const * filename, bool optimal )
         ParkingLot pl( filename );
         std::vector< std::tuple<unsigned, Direction, unsigned> > sol;
         if ( optimal ) {
-            sol = pl.SolveOptimally( );
+            sol = pl.SolveBFS( );
         } else {
             sol = pl.Solve( );
         }
@@ -101,15 +101,15 @@ int main( int argc, char ** argv )
     std::string filename( argv[1] );                                    //
                                                                         //
     try {                                                               //
-        ParkingLot pl( filename );                                      //
+        RushHour pl( filename );                                      //
         std::cout << "Initial position (solve by moving car "           //
             << pl.Car() << " " << pl.Dir() << "):\n";                   //
         std::cout << pl;                                                //
         std::vector< std::tuple<unsigned, Direction, unsigned> > sol;   //
         if ( optimal ) {                                                //
-            sol = pl.SolveOptimally( );                                 //
+            sol = pl.SolveBFS( );                                 //
         } else {                                                        //
-            sol = pl.Solve( );                                          //
+            sol = pl.SolveDFS( );                                          //
         }                                                               //
         pl.Check( sol );                                                //
     } catch ( char const * msg ) {                                      //
