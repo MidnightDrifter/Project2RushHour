@@ -457,6 +457,8 @@ Orientation RushHour::getOrientation(unsigned car) const
 			}
 		}
 	}
+
+	return vertical;
 }
 
 
