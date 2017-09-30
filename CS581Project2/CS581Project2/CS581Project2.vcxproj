@@ -79,9 +79,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,7 +113,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\driver.cpp" />
     <ClCompile Include="..\..\rushhour.cpp" />
-    <ClCompile Include="..\..\rushhour.skeleton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\handout.txt" />
@@ -147,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\rushhour.h" />
-    <ClInclude Include="..\..\rushhour.skeleton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

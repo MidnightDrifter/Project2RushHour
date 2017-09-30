@@ -23,14 +23,7 @@ enum Orientation { horisontal, vertical};
 // Keep this
 std::ostream& operator<<( std::ostream& os, Direction const& d );
 
-// Keep this
-////////////////////////////////////////////////////////////////////////////////
-// global functions
-std::vector< std::tuple<unsigned, Direction, unsigned> > 
-SolveRushHour( std::string const& filename );
 
-std::vector< std::tuple<unsigned, Direction, unsigned> > 
-SolveRushHourOptimally( std::string const& filename );
 
 ////////////////////////////////////////////////////////////////////////////////
 // your stuff
@@ -44,22 +37,27 @@ class BoardState;
 
 class RushHour {
   
+
+
 private:
-	unsigned height = 0;           // size of parking lot  x
-	unsigned width = 0;            // size of parking lot  x
-	unsigned ** parking_lot = nullptr;      // parking lot   x
-	Direction exit_direction = undefined;    // exit direction   x
-	unsigned car = 0;            // car to be navigated   x
-	std::string filename = std::string();// filename for data   x
-	
-	//State actions - store these in list thing
-	int carSwaps;   
-	int treeDepth;   
-	Orientation myOrientation;   
-	unsigned numCars;    
-	std::tuple <unsigned, Direction, unsigned> moveToGetHere;   
-	RushHour* parent;   
-	unsigned myCar;   
+	unsigned height;// = 0;           // size of parking lot  x
+	unsigned width;// = 0;            // size of parking lot  x
+	unsigned ** parking_lot;// = nullptr;      // parking lot   x
+	Direction exit_direction;// = undefined;    // exit direction   x
+	unsigned car;// = 0;            // car to be navigated   x
+	std::string filename;// = std::string();// filename for data   x
+
+										 //State actions - store these in list thing
+	int carSwaps;
+	int treeDepth;
+	Orientation myOrientation;
+	unsigned numCars;
+	std::tuple <unsigned, Direction, unsigned> moveToGetHere;
+	RushHour* parent = nullptr;
+	unsigned myCar;
+
+
+
 										 //My stuff
 	//filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left)
 
@@ -74,6 +72,7 @@ public:
 	~RushHour();
 
 	void makeMove(std::tuple< unsigned, Direction, unsigned > move);
+	/*
 	std::vector< std::tuple<unsigned, Direction, unsigned> > Solve()
 	{
 		return SolveRushHour(filename);
@@ -82,6 +81,7 @@ public:
 	{
 		return SolveRushHourOptimally(filename);
 	}
+	*/
 	bool IsSolved() const;
 	int Check(std::vector< std::tuple<unsigned, Direction, unsigned> > const& sol);
 	int CheckBrief(std::vector< std::tuple<unsigned, Direction, unsigned> > const& sol);
@@ -111,14 +111,14 @@ public:
 	friend bool operator<(const RushHour& b1, const RushHour& b2) { return b1.carSwaps < b2.carSwaps; }
 	friend bool operator>(const RushHour& b1, const RushHour& b2) { return b1.carSwaps > b2.carSwaps; }
 	RushHour() : filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left) {}
-
+	
 	RushHour(const RushHour& other) : filename(other.filename), myCar(other.myCar), car(other.car), carSwaps(other.carSwaps), myOrientation(other.myOrientation), width(other.width), height(other.width), numCars(other.numCars), moveToGetHere(other.moveToGetHere), exit_direction(other.exit_direction)
 	{
 
-		for (int i = 0; i < height; i++)
+		for (unsigned i = 0; i < height; i++)
 		{
 			parking_lot[i] = new unsigned[width];
-			for (int j = 0; j < width; j++)
+			for (unsigned j = 0; j < width; j++)
 			{
 				parking_lot[i][j] = other.parking_lot[i][j];
 			}
@@ -126,7 +126,7 @@ public:
 	}
 
 	
-	std::vector<std::tuple<unsigned, Direction, unsigned>> SolveBFS()
+	std::vector<std::tuple<unsigned, Direction, unsigned>> RHSolveBFS()
 	{
 		//std::priority_queue<BoardState, std::vector<BoardState>, std::greater<BoardState> > openList;
 		std::priority_queue<RushHour, std::vector<RushHour>, std::greater<RushHour>> openList;
@@ -164,9 +164,9 @@ public:
 
 			//if (!isOnClosedList)
 			//{
-			std::swap(stateHolder, tempState.spawnChildren());
-
-			for (int x = 0; x < stateHolder.size(); x++)
+//			std::swap(&stateHolder, tempState.spawnChildren());
+			stateHolder = tempState.spawnChildren();
+			for (unsigned x = 0; x < stateHolder.size(); x++)
 			{
 				isOnClosedList = false;
 				for (auto i = closedList.begin(); i != closedList.end(); i++)
@@ -210,7 +210,7 @@ public:
 
 	
 
-	std::vector < std::tuple<unsigned, Direction, unsigned>> SolveDFS()
+	std::vector < std::tuple<unsigned, Direction, unsigned>> RHSolveDFS()
 	{
 
 		std::stack<RushHour> openList;
@@ -252,9 +252,11 @@ public:
 
 				//if (!isOnClosedList)
 				//{
-				std::swap(stateHolder, tempState.spawnChildren());
+			//	std::swap(stateHolder, tempState.spawnChildren());
 
-				for (int x = 0; x < stateHolder.size(); x++)
+				stateHolder = tempState.spawnChildren();
+
+				for (unsigned x = 0; x < stateHolder.size(); x++)
 				{
 					isOnClosedList = false;
 					for (auto i = closedList.begin(); i != closedList.end(); i++)
@@ -303,6 +305,28 @@ public:
   //  public:
       //  std::vector< std::tuple<unsigned, Direction, unsigned> > Solve();
       //  std::vector< std::tuple<unsigned, Direction, unsigned> > SolveOptimally();
+	
+
+
+
+
 };
+
+
+
+
+
+
+
+
+
+// Keep this
+////////////////////////////////////////////////////////////////////////////////
+// global functions
+std::vector < std::tuple<unsigned, Direction, unsigned> >
+	SolveRushHourBFS(std::string const& filename);
+std::vector< std::tuple<unsigned, Direction, unsigned> >
+SolveRushHourDFS(std::string const& filename);
+
 
 #endif

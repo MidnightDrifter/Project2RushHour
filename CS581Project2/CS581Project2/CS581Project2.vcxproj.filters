@@ -18,9 +18,6 @@
     <ClCompile Include="..\..\driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\rushhour.skeleton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\rushhour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,9 +105,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\rushhour.skeleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\rushhour.h">
       <Filter>Header Files</Filter>
     </ClInclude>

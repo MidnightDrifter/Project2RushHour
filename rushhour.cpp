@@ -1,5 +1,13 @@
 //#include <iostream>
 #include "rushhour.h"
+// Keep this
+////////////////////////////////////////////////////////////////////////////////
+// global functions
+std::vector< std::tuple<unsigned, Direction, unsigned> >
+SolveRushHourBFS(std::string const& filename) { RushHour solver(filename);  return solver.RHSolveBFS(); }
+
+std::vector< std::tuple<unsigned, Direction, unsigned> >
+SolveRushHourDFS(std::string const& filename) { RushHour solver(filename);  return solver.RHSolveDFS(); }
 
 // Keep this
 std::ostream& operator<<( std::ostream& os, Direction const& d ) {
@@ -273,10 +281,10 @@ BoardState::BoardState(const std::string& filename)
 			std::get<2>(moveToGetHere) = std::get<2>(other.moveToGetHere);
 
 
-			for (int i = 0; i < height; i++)
+			for (unsigned i = 0; i < height; i++)
 			{
 				//myState[i] = new unsigned[boardWidth];
-				for (int j = 0; j < width; j++)
+				for (unsigned j = 0; j < width; j++)
 				{
 					parking_lot[i][j] = other.parking_lot[i][j];
 				}
@@ -291,7 +299,7 @@ BoardState::BoardState(const std::string& filename)
 void RushHour::spawnChildrenPerCar(unsigned car, std::vector<RushHour>& vec)   //Will have to loop through & call this for each car
 {
 	Direction directions[2] = { left, right };
-	int spacesToCheck = width;
+	unsigned spacesToCheck = width;
 	bool isVertical = (this->getOrientation(car) == vertical);
 	if (isVertical)
 	{
@@ -303,7 +311,7 @@ void RushHour::spawnChildrenPerCar(unsigned car, std::vector<RushHour>& vec)   /
 	for (int x = 0; x < 2; x++)   //For each direction
 	{
 
-		for (int y = 1; y <= spacesToCheck; y++)
+		for (unsigned y = 1; y <= spacesToCheck; y++)
 		{
 			std::tuple<unsigned, Direction, unsigned> move(car, directions[x], y);
 			//void RushHour::makeMove(std::tuple< unsigned, Direction, unsigned > move)
@@ -396,7 +404,7 @@ void RushHour::spawnChildrenPerCar(unsigned car, std::vector<RushHour>& vec)   /
 std::vector<RushHour> RushHour::spawnChildren()
 {
 	std::vector<RushHour> out;
-	for (int i = 1; i <= numCars; i++)
+	for (unsigned i = 1; i <= numCars; i++)
 	{
 		spawnChildrenPerCar(i, out);
 	}
@@ -420,10 +428,10 @@ RushHour::RushHour(RushHour& other) //: parent(&other), myState(NULL), myCar(oth
 
 		parking_lot = new unsigned*[height];
 
-		for (int i = 0; i < height; i++)
+		for (unsigned i = 0; i < height; i++)
 		{
 			parking_lot[i] = new unsigned[width];
-			for (int j = 0; j < width; j++)
+			for (unsigned j = 0; j < width; j++)
 			{
 				parking_lot[i][j] = other.parking_lot[i][j];
 			}
@@ -438,9 +446,9 @@ RushHour::RushHour(RushHour& other) //: parent(&other), myState(NULL), myCar(oth
 
 Orientation RushHour::getOrientation(unsigned car) const
 {
-	for(int i=0;i<height;i++)
+	for(unsigned i=0;i<height;i++)
 	{
-		for (int j = 0; j < width; j++)
+		for (unsigned j = 0; j < width; j++)
 		{
 			if (parking_lot[i][j] == car)
 			{
@@ -457,6 +465,8 @@ Orientation RushHour::getOrientation(unsigned car) const
 			}
 		}
 	}
+
+	return horisontal;
 }
 
 
@@ -615,10 +625,10 @@ std::ostream& operator<<(std::ostream& os, RushHour const& pl) {
 
 bool RushHour::operator==(const RushHour& other)
 {
-	for (int i = 0; i < height; i++)
+	for (unsigned i = 0; i < height; i++)
 	{
 		//myState[i] = new unsigned[boardWidth];
-		for (int j = 0; j < width; j++)
+		for (unsigned j = 0; j < width; j++)
 		{
 
 			if (parking_lot[i][j] != other.parking_lot[i][j])
@@ -710,9 +720,9 @@ RushHour::~RushHour()
 {
 	if (parking_lot)
 	{
-		for(int i=0;i<height;++i)
+		for(unsigned i=0;i<height;++i)
 		{
-			for (int j = 0; j < width;++j)
+			for (unsigned j = 0; j < width;++j)
 			{
 				if (parking_lot[i])
 				{

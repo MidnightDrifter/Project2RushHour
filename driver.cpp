@@ -27,12 +27,13 @@ class ParkingLot {
         ParkingLot( std::string const&  filename );
         ~ParkingLot();
         void makeMove( std::tuple< unsigned, Direction, unsigned > move );
-        std::vector< std::tuple<unsigned, Direction, unsigned> > Solve() 
+    
+		std::vector< std::tuple<unsigned, Direction, unsigned> > SolveBFS() 
         { 
-            return SolveRushHour( filename ); 
+            return SolveRushHourBFS( filename ); 
         }
-        std::vector< std::tuple<unsigned, Direction, unsigned> > SolveBFS() 
-            { return SolveRushHourOptimally( filename ); }
+        std::vector< std::tuple<unsigned, Direction, unsigned> > SolveDFS() 
+            { return SolveRushHourDFS( filename ); }
         bool IsSolved() const;
         int Check( std::vector< std::tuple<unsigned, Direction, unsigned> > const& sol );
         int CheckBrief( std::vector< std::tuple<unsigned, Direction, unsigned> > const& sol );
@@ -46,7 +47,7 @@ void run_test( char const * filename, bool optimal )
         if ( optimal ) {
             sol = pl.SolveBFS( );
         } else {
-            sol = pl.Solve( );
+            sol = pl.SolveDFS( );
         }
         pl.CheckBrief( sol );
     } catch ( char const * msg ) {
@@ -107,9 +108,9 @@ int main( int argc, char ** argv )
         std::cout << pl;                                                //
         std::vector< std::tuple<unsigned, Direction, unsigned> > sol;   //
         if ( optimal ) {                                                //
-            sol = pl.SolveBFS( );                                 //
+            sol = pl.RHSolveBFS( );                                 //
         } else {                                                        //
-            sol = pl.SolveDFS( );                                          //
+            sol = pl.RHSolveDFS( );                                          //
         }                                                               //
         pl.Check( sol );                                                //
     } catch ( char const * msg ) {                                      //
