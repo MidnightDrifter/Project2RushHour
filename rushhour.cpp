@@ -4,10 +4,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // global functions
 std::vector< std::tuple<unsigned, Direction, unsigned> >
-SolveRushHourBFS(std::string const& filename) { RushHour solver(filename);  return solver.RHSolveBFS(); }
+SolveRushHourOptimally(std::string const& filename) { RushHour solver(filename);  return solver.RHSolveBFS(); }
 
 std::vector< std::tuple<unsigned, Direction, unsigned> >
-SolveRushHourDFS(std::string const& filename) { RushHour solver(filename);  return solver.RHSolveDFS(); }
+SolveRushHour(std::string const& filename) { RushHour solver(filename);  return solver.RHSolveDFS(); }
 
 // Keep this
 std::ostream& operator<<( std::ostream& os, Direction const& d ) {
@@ -262,6 +262,8 @@ BoardState::BoardState(const std::string& filename)
 */
 	const RushHour& RushHour::operator=(const RushHour& other)
 	{
+		//filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left)
+
 		if (&other != this)
 		{
 			parent = other.parent;
