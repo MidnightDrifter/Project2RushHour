@@ -100,9 +100,13 @@ public:
 	friend bool operator<(const RushHour& b1, const RushHour& b2) { return b1.carSwaps < b2.carSwaps; }
 	friend bool operator>(const RushHour& b1, const RushHour& b2) { return b1.carSwaps > b2.carSwaps; }
 	RushHour() : filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left) {}
-	//filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left)
+	//filename, parent, parking_lot, myCar, car, carSwaps, treeDepth, myOrientation, width, height, numCars, moveToGetHere,exit_direction
 
-	RushHour(const RushHour& other) : filename(other.filename), parent(other.parent),parking_lot(NULL), myCar(other.myCar), car(other.car), carSwaps(other.carSwaps),treeDepth(other.treeDepth), myOrientation(other.myOrientation), width(other.width), height(other.width), numCars(other.numCars), moveToGetHere(other.moveToGetHere), exit_direction(other.exit_direction)
+	
+	//filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left)
+	//filename, parent, parking_lot, myCar, car, carSwaps, treeDepth, myOrientation, width, height, numCars, moveToGetHere,exit_direction
+
+	RushHour(const RushHour& other) : filename(other.filename), parent(other.parent),parking_lot(NULL), myCar(other.myCar), car(other.car), carSwaps(other.carSwaps),treeDepth(other.treeDepth), myOrientation(other.myOrientation), width(other.width), height(other.height), numCars(other.numCars), moveToGetHere(other.moveToGetHere), exit_direction(other.exit_direction)
 	{
 
 		for (unsigned i = 0; i < height; i++)
@@ -305,6 +309,8 @@ public:
 
 private:
 
+
+	//filename, parent, parking_lot, myCar, car, carSwaps, treeDepth, myOrientation, width, height, numCars, moveToGetHere,exit_direction
 	std::string filename;// = std::string();// filename for data   x
 	RushHour* parent; //=nullptr;
 	unsigned ** parking_lot;// = nullptr;      // parking lot   x
@@ -313,14 +319,15 @@ private:
 	int carSwaps;
 	int treeDepth;
 	Orientation myOrientation;
-
-	unsigned height;// = 0;           // size of parking lot  x
 	unsigned width;// = 0;            // size of parking lot  x
+	unsigned height;// = 0;           // size of parking lot  x
+
 	unsigned numCars;
 	std::tuple <unsigned, Direction, unsigned> moveToGetHere;
 
 
 	Direction exit_direction;// = undefined;    // exit direction   x
+
 
 
 							 //State actions - store these in list thing

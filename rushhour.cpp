@@ -472,9 +472,11 @@ Orientation RushHour::getOrientation(unsigned car) const
 }
 
 
-
+/**/
 // RushHour implementation
-RushHour::RushHour(std::string const&  filename) : filename(filename)
+//filename, parent, parking_lot, myCar, car, carSwaps, treeDepth, myOrientation, width, height, numCars, moveToGetHere,exit_direction
+
+RushHour::RushHour(std::string const&  filename) : filename(filename), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0,left,0),exit_direction(left)
 {
 	std::ifstream infile(filename);
 	std::string   data; // all data from input file
@@ -517,6 +519,7 @@ RushHour::RushHour(std::string const&  filename) : filename(filename)
 	}
 	if (std::regex_match(data, match, std::regex(".*car\\s+(\\d+).*", std::regex_constants::icase)) && match.size() == 2) {
 		car = std::stoi(match[1]);
+		myCar = car;
 		data = std::regex_replace(data, std::regex("car\\s+\\d+", std::regex_constants::icase), "");
 	}
 	else {
@@ -541,9 +544,13 @@ RushHour::RushHour(std::string const&  filename) : filename(filename)
 	std::regex re_cell("(\\d+)"); // each cell is a number or dot
 	std::sregex_iterator cell_matches_begin = std::sregex_iterator(data.begin(), data.end(), re_cell);
 	std::sregex_iterator cell_matches_end = std::sregex_iterator();
-
+	
+	
+	
+	unsigned maxCarNum = 0;
 	// should have exactly height*width numbers and dots
 	if (std::distance(cell_matches_begin, cell_matches_end) == height*width) {
+		
 		unsigned * parking_lot_data = new unsigned[height*width];
 		parking_lot = new unsigned*[height];
 		for (unsigned i = 0; i<height; ++i) {
@@ -552,12 +559,22 @@ RushHour::RushHour(std::string const&  filename) : filename(filename)
 		unsigned pos = 0;
 		for (std::sregex_iterator iter = cell_matches_begin; iter != cell_matches_end; ++iter) {
 			parking_lot_data[pos++] = std::stoi((*iter).str());
+	
+			if (parking_lot_data[pos] > maxCarNum)
+			{
+				maxCarNum = parking_lot_data[pos];
+			}
+
 		}
 	}
 	else {
 		std::cerr << "Errors in input file: number of cells should be " << height << "*" << width << ". Found " << std::distance(cell_matches_begin, cell_matches_end) << std::endl;
 		throw "Errors in input file: number of cells";
 	}
+
+	numCars = maxCarNum;
+
+
 }
 
 // Direction is an enum (see header):
