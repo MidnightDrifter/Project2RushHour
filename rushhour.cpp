@@ -260,6 +260,11 @@ BoardState::BoardState(const std::string& filename)
 }
 
 */
+
+//My stuff
+//filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left)
+
+
 	const RushHour& RushHour::operator=(const RushHour& other)
 	{
 		if (&other != this)
@@ -410,21 +415,27 @@ std::vector<RushHour> RushHour::spawnChildren()
 	}
 	return out;
 }
+//My stuff
+//filename(""), parent(NULL), parking_lot(NULL), myCar(0), car(0), carSwaps(0), treeDepth(0), myOrientation(horisontal), width(0), height(0), numCars(0), moveToGetHere(0, left, 0), exit_direction(left)
 
 
-RushHour::RushHour(RushHour& other) //: parent(&other), myState(NULL), myCar(other.myCar), carSwaps(other.carSwaps), treeDepth(other.treeDepth +1), myOrientation(other.myOrientation), 
+
+RushHour::RushHour(RushHour& other) : filename(other.filename), parent(&other), myCar(other.myCar), car(other.car), carSwaps(other.carSwaps), treeDepth(other.treeDepth +1), myOrientation(other.myOrientation), width(other.width), height(other.height), numCars(other.numCars), moveToGetHere(other.moveToGetHere), exit_direction(other.exit_direction)
 {
-	if (this != &other)
-	{
+	/*
+		filename = other.filename;
 		parent = &other;
 		myCar = other.myCar;
-		myOrientation = other.myOrientation;
 		carSwaps = other.carSwaps;
 		treeDepth = other.treeDepth + 1;
+
+		myOrientation = other.myOrientation;
+		
 		width = other.width;
 		height = other.height;
 		numCars = other.numCars;
 		moveToGetHere = std::tuple<unsigned, Direction, unsigned>(std::get<0>(other.moveToGetHere), std::get<1>(other.moveToGetHere), std::get<2>(other.moveToGetHere));
+		*/
 
 		parking_lot = new unsigned*[height];
 
@@ -437,8 +448,7 @@ RushHour::RushHour(RushHour& other) //: parent(&other), myState(NULL), myCar(oth
 			}
 		}
 
-
-	}
+	
 }
 
 
